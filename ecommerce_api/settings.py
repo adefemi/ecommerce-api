@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'graphene_django',
     'user_controller',
-    'product_controller'
 ]
 
 AUTH_USER_MODEL="user_controller.User"
