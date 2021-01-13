@@ -17,8 +17,8 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('first_name', "Admin")
-        extra_fields.setdefault('last_name', "Admin")
+        extra_fields.setdefault('first_name', "admin")
+        extra_fields.setdefault('last_name', "admin")
 
         if not extra_fields.get("is_staff", False):
             raise ValueError('Superuser must have is_staff=True.')
@@ -31,6 +31,8 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -53,5 +55,34 @@ class ImageUpload(models.Model):
 
     def __str__(self):
         return str(self.image)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name="user_profile", on_delete=models.CASCADE)
+    profile_picture = models.ForeignKey(ImageUpload, related_name="user_images", on_delete=models.SET_NULL, null=True)
+    dob = models.DateField()
+    phone = models.PositiveIntegerField()
+    country_code = models.CharField(default="+234", max_length=5)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.email
+
+
+class UserAddress(models.Model):
+    user_profile = models.ForeignKey(UserProfile, related_name="user_addresses", on_delete=models.CASCADE)
+    street = models.TextField()
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    country = models.CharField(max_length=100, default="Nigeria")
+    is_default = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user_profile.user.email
+
 
 
