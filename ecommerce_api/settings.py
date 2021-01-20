@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'graphene_django',
     'user_controller',
     'product_controller',
+    'corsheaders'
 ]
 
 AUTH_USER_MODEL="user_controller.User"
@@ -37,6 +38,7 @@ AUTH_USER_MODEL="user_controller.User"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -155,3 +157,5 @@ GRAPHENE = {
     ],
     'PAGE_SIZE': 20
 }
+
+CORS_ALLOW_ALL_ORIGINS = True
