@@ -64,7 +64,7 @@ class Query(graphene.ObjectType):
      business=graphene.String(), sort_by=graphene.String(), is_asc=graphene.Boolean())
     product = graphene.Field(ProductType, id=graphene.ID(required=True))
 
-    def resolve_categories(self, info, name):
+    def resolve_categories(self, info, name=False):
         query = Category.objects.prefetch_related("product_categories")
 
         if name:
