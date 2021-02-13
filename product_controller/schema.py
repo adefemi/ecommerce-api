@@ -205,6 +205,7 @@ class CreateProduct(graphene.Mutation):
 
         product_data["total_available"] = total_count
         product_data["total_count"] = total_count
+        product_data["business_id"] = buss_id
 
         product = Product.objects.create(**product_data, **kwargs)
 
