@@ -27,7 +27,7 @@ class TokenManager:
 
     @staticmethod
     def get_access(payload):
-        return TokenManager.get_token(5, payload)
+        return TokenManager.get_token(24*60, payload)
 
     @staticmethod
     def get_refresh(payload):

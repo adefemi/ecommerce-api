@@ -193,7 +193,7 @@ class CreateProduct(graphene.Mutation):
         images = graphene.List(ProductImageInput)
 
     @is_authenticated
-    def mutate(self, info, product_data, images, **kwargs):
+    def mutate(self, info, total_count, product_data, images, **kwargs):
         try:
             buss_id = info.context.user.user_business.id
         except Exception:
@@ -203,7 +203,7 @@ class CreateProduct(graphene.Mutation):
         if have_product:
             raise Exception("You already have a product with this name")
 
-        product_data["total_available"] = product_data["total_count"]
+        product_data["total_available"] = total_count
 
         product = Product.objects.create(**product_data, **kwargs)
 
