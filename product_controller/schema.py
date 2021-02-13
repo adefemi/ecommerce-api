@@ -204,6 +204,7 @@ class CreateProduct(graphene.Mutation):
             raise Exception("You already have a product with this name")
 
         product_data["total_available"] = total_count
+        product_data["total_count"] = total_count
 
         product = Product.objects.create(**product_data, **kwargs)
 
