@@ -2,6 +2,7 @@ import graphene
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 import re
+from django.db.models import Q
 
 def is_authenticated(func):
 
@@ -31,7 +32,13 @@ def resolve_paginated(query_data, info, page_info):
     def get_paginated_data(qs, paginated_type, page):
         page_size = settings.GRAPHENE.get("PAGE_SIZE", 10)
 
+        try:
+            qs.count()
+        except:
+            raise Exception(qs)
+
         p = Paginator(qs, page_size)
+
 
         try:
             page_obj = p.page(page)
@@ -53,10 +60,13 @@ def resolve_paginated(query_data, info, page_info):
 
     return get_paginated_data(query_data, info.return_type, page_info)
 
+def normalize_query(query_string, findterms=re.compile(r'"([^"]+)"|(\S+)').findall, normspace=re.compile(r'\s{2,}').sub):
+    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
+
 
 def get_query(query_string, search_fields):
     query = None  # Query to search for every search term
-    terms = UserProfileView.normalize_query(query_string)
+    terms = normalize_query(query_string)
     for term in terms:
         or_query = None  # Query to search for a given term in each field
         for field_name in search_fields:
@@ -72,5 +82,3 @@ def get_query(query_string, search_fields):
     return query
 
 
-def normalize_query(query_string, findterms=re.compile(r'"([^"]+)"|(\S+)').findall, normspace=re.compile(r'\s{2,}').sub):
-    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
