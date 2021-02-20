@@ -10,9 +10,14 @@ from .models import (
 
 
 class CategoryType(DjangoObjectType):
+    count = graphene.Int()
 
     class Meta:
         model = Category
+
+    def resolve_count(self, info):
+        return self.product_categories.count()
+
 
 
 class BusinessType(DjangoObjectType):
@@ -345,7 +350,7 @@ class HandleWishList(graphene.Mutation):
         else:
             if is_check:
                 return HandleWishList(status=False)
-            user_wish.products.add()
+            user_wish.products.add(product)
 
         return HandleWishList(status=True)
 
