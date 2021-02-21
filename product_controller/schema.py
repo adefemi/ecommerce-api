@@ -399,7 +399,7 @@ class DeleteCartItem(graphene.Mutation):
     def mutate(self, info, cart_id):
         Cart.objects.filter(id=cart_id, user_id=info.context.user.id).delete()
 
-        return UpdateCartItem(
+        return DeleteCartItem(
             status = True
         )
 
