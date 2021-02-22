@@ -67,7 +67,9 @@ class Query(graphene.ObjectType):
     products = graphene.Field(paginate(ProductType), search=graphene.String(),
      min_price=graphene.Float(), max_price=graphene.Float(), category=graphene.String(),
      business=graphene.String(), sort_by=graphene.String(), is_asc=graphene.Boolean())
-    product = graphene.Field(ProductType, id=graphene.ID(required=True))
+    product = graphene.Field(ProductType, id=graphene.ID(required=True), mine=graphene.Boolean())
+    carts = graphene.List(CartType, name=graphene.String())
+    request_carts = graphene.List(RequestCartType, name=graphene.String())
 
     def resolve_categories(self, info, name=False):
         query = Category.objects.prefetch_related("product_categories")
@@ -77,10 +79,38 @@ class Query(graphene.ObjectType):
 
         return query
 
+    @is_authenticated
+    def resolve_carts(self, info, name=False):
+        query = Cart.objects.select_related("user", "product").filter(user_id=info.context.user.id)
+
+        if name:
+            query = query.filter(Q(product__name__icontains=name) | Q(product__name__iexact=name)).distinct()
+
+        return query
+
+    @is_authenticated
+    def resolve_request_carts(self, info, name=False):
+        query = RequestCart.objects.select_related(
+            "user", "product", "business").filter(business__user_id=info.context.user.id)
+
+        if name:
+            query = query.filter(Q(product__name__icontains=name) | Q(product__name__iexact=name)).distinct()
+
+        return query
+
     def resolve_products(self, info, **kwargs):
+
+        mine = kwargs.get("mine", False)
+        if mine and not info.context.user:
+            raise Exception("User auth required")
+
+
         query = Product.objects.select_related("category", "business").prefetch_related(
             "product_images", "product_comments", "products_wished", "product_carts", "product_requests"
         )
+
+        if mine:
+            query = query.filter(business__user_id=info.context.user.id)
 
         if kwargs.get("search", None):
             qs = kwargs["search"]
