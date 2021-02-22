@@ -66,8 +66,8 @@ class Query(graphene.ObjectType):
     categories = graphene.List(CategoryType, name=graphene.String())
     products = graphene.Field(paginate(ProductType), search=graphene.String(),
      min_price=graphene.Float(), max_price=graphene.Float(), category=graphene.String(),
-     business=graphene.String(), sort_by=graphene.String(), is_asc=graphene.Boolean())
-    product = graphene.Field(ProductType, id=graphene.ID(required=True), mine=graphene.Boolean())
+     business=graphene.String(), sort_by=graphene.String(), is_asc=graphene.Boolean(), mine=graphene.Boolean())
+    product = graphene.Field(ProductType, id=graphene.ID(required=True))
     carts = graphene.List(CartType, name=graphene.String())
     request_carts = graphene.List(RequestCartType, name=graphene.String())
 
